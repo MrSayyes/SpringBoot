@@ -208,6 +208,18 @@ next >>>>>>>>>>>
 
 ![向导界面](images\SpringStarterProject2.png)
 
+ps：Spring Boot Version如果发生变化有时会导致maven构建失败，解决方式就是设置maven镜像下载的配置参数<mirror></mirror>，或者找适合的SpringBoot版本
+
+```xml
+<!-- 这里是阿里镜像 -->
+<mirror>
+    <id>nexus-aliyun</id>
+    <name>nexus-aliyun</name>
+    <url>http://maven.aliyun.com/nexus/content/groups/public</url>
+    <mirrorOf>central</mirrorOf>
+</mirror>
+```
+
 ### 4.2 quick创建目录
 
 - 删除多余文件
@@ -467,13 +479,13 @@ class ApplicationTests {
 
 #### 5.3.3 @value与@ConfigurationProperties(prefix = "person")区别
 
-|                | @ConfigurationProperties  | @value           |
-| -------------- | ------------------------- | ---------------- |
-| 功能           | 批量注入配置文件的属性    | 一个一个处理     |
-| 松散绑定       | 支持（如大写和-小写同等） | 不支持           |
-| SpEl           | 不支持                    | 支持（如#{1*2}） |
-| JSR303数据校验 | 支持（如邮箱@Email）      | 不支持           |
-| 复杂类型封装   | 支持                      | 不支持           |
+|                      | @ConfigurationProperties  | @value           |
+| -------------------- | ------------------------- | ---------------- |
+| 功能                 | 批量注入配置文件的属性    | 一个一个处理     |
+| 松散绑定             | 支持（如大写和-小写同等） | 不支持           |
+| SpEl（spring表达式） | 不支持                    | 支持（如#{1*2}） |
+| JSR303数据校验       | 支持（如邮箱@Email）      | 不支持           |
+| 复杂类型封装         | 支持                      | 不支持           |
 
 配置文件yml和properties都可以，两种注入绑定取值区别的处理
 
@@ -481,5 +493,60 @@ class ApplicationTests {
 
 ==如果说，我们专门编写了一个javaBean来和配置文件进行映射就使用@ConfigurationProperties==
 
-### 5.4 @PropertySource(value = {"classpath:"})
+### 5.4 @PropertySource(value = {"classpath:*"})
 
+这个是在原来ConfigurationProperties(prefix = "person")基础上，指定绑定哪个文件下的person值，其他和ConfigurationProperties一样用
+
+### 5.5@ImportResource(locations = {"classpath:*.xml"})
+
+**导入Spring的配置文件**，让配置文件里面的内容生效
+
+1、创建spring配置文件，<bean id="" class=""/>
+
+2、主类添加@ImportResource注解
+
+2、测试类校验是否容器中存在配置的bean
+
+```java
+@Autowired
+ApplicationContext ioc;
+
+@Test
+public void testHelloService() {
+    boolean b = ioc.containsBean("helloService");
+    System.out.println("结果"+b);
+}
+```
+
+**SpringBoot推荐给容器加组件**的方式，推荐全注解
+
+- 配置类====Spring配置文件
+
+```java
+package com.test.config;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+import com.test.service.HelloService;
+
+/**
+ * @Configuration：指明当前类为配置类，代替spring配置文件 
+ * 在配置文件中用@Bean代替配置文件的<bean></bean>标签添加组件
+ * 
+ * @author sayyes
+ */
+@Configuration
+public class MyConfig {
+	
+	//将方法的返回值添加到容器中，容器中这个组件的默认id就是方法名
+	@Bean
+	public HelloService helloService() {
+		System.out.println("给容器添加helloService");
+		return new HelloService();
+	}
+}
+
+```
+
+### 5.6
