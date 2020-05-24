@@ -168,5 +168,20 @@ redisdesktopmanager工具
   - open in browser
   - vetur
 - git 版本管理
-- 
+
+## 二、项目开发
+
+### 1、idea创建工程各个模块（Spring Initializr向导）
+
+商品服务、仓储服务、订单服务、优惠券服务、用户服务
+
+共同：
+
+​		spring的共同部分web、openfeign
+
+​		每个服务，包名类似，除了根据服务不同区分
+
+![](../images/case03.png)
+
+2、
 
