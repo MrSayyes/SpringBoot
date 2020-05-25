@@ -1,3 +1,1 @@
 1、SpringBoot_Basic是学习基础篇
-
-2、SpringBoot_Case是项目案例高级篇
